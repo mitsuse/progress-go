@@ -7,7 +7,8 @@ A library to show progressbars in CLI implemented in Golang.
 
 ## TODO
 
-- Implement austere progressbar.
+- Implement custumizable progressbar.
+- Use channel to update the progress and the bar.
 
 ## License
 
