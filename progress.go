@@ -1,15 +1,24 @@
 package progress
 
+import (
+	"fmt"
+	"strings"
+)
+
 type ProgressBar interface {
 	Progress() (progress uint)
 	Task() (task uint)
 	Show()
+	Close()
 	Add(progress uint)
+	isShown() (shown bool)
 }
 
 type progressBar struct {
-	progress uint
-	task     uint
+	progress   uint
+	task       uint
+	lastUpdate uint
+	shown      bool
 }
 
 func New(task uint) ProgressBar {
@@ -22,8 +31,7 @@ func New(task uint) ProgressBar {
 }
 
 func (p *progressBar) Progress() (progress uint) {
-	progress = p.progress
-	return
+	return p.progress
 }
 
 func (p *progressBar) Task() (task uint) {
@@ -32,13 +40,50 @@ func (p *progressBar) Task() (task uint) {
 }
 
 func (p *progressBar) Show() {
-	// TODO: Implement this method.
+	p.shown = true
+
+	p.refresh()
+}
+
+func (p *progressBar) Close() {
+	if !p.isShown() {
+		return
+	}
+
+	p.refresh()
+
+	p.shown = false
+	fmt.Print("\n")
 }
 
 func (p *progressBar) Add(progress uint) {
-	// TODO: Implement this method.
+	if update := p.progress + progress; update > p.task {
+		p.progress = p.task
+	} else {
+		p.progress = update
+	}
+
+	p.refresh()
 }
 
 func (p *progressBar) refresh() {
-	// TODO: Implement this method.
+	if !p.isShown() {
+		return
+	}
+
+	task := float64(p.Task())
+	progress := float64(p.Progress())
+	ratio := progress / task
+
+	// TODO: Obtain the width of progress bar as a argument of New().
+	progressStr := strings.Repeat("#", int(60*ratio))
+
+	window := GetWindow()
+	fmt.Print(strings.Repeat("\b", window.Cols()))
+
+	fmt.Printf("\r%.1f%% %s", ratio*100, progressStr)
+}
+
+func (p *progressBar) isShown() (shown bool) {
+	return p.shown
 }
