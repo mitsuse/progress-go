@@ -23,7 +23,6 @@ for task := 0; task < p.Task(); task++ {
 
 // Force to update and quit the progress bar.
 p.Close()
-}
 ```
 
 
