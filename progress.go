@@ -3,6 +3,7 @@ package progress
 import (
 	"fmt"
 	"strings"
+	"time"
 )
 
 type ProgressBar interface {
@@ -19,12 +20,16 @@ type progressBar struct {
 	task       int
 	lastUpdate uint
 	shown      bool
+	tickCh     chan time.Time
+	finalizeCh chan struct{}
 }
 
 func New(task int) ProgressBar {
 	p := &progressBar{
-		progress: 0,
-		task:     task,
+		progress:   0,
+		task:       task,
+		tickCh:     make(chan time.Time),
+		finalizeCh: make(chan struct{}),
 	}
 
 	return p
@@ -41,19 +46,34 @@ func (p *progressBar) Task() (task int) {
 
 func (p *progressBar) Show() {
 	p.shown = true
-
 	p.refresh()
+
+	ticker := time.NewTicker(time.Millisecond * 100)
+	go func() {
+		for t := range ticker.C {
+			p.tickCh <- t
+		}
+	}()
+
+	go func() {
+		for _ = range p.tickCh {
+			p.refresh()
+		}
+
+		ticker.Stop()
+		p.finalize()
+	}()
 }
 
 func (p *progressBar) Close() {
 	if !p.isShown() {
 		return
 	}
-
-	p.refresh()
-
 	p.shown = false
-	fmt.Print("\n")
+
+	close(p.tickCh)
+
+	<-p.finalizeCh
 }
 
 func (p *progressBar) Add(progress int) {
@@ -62,15 +82,9 @@ func (p *progressBar) Add(progress int) {
 	} else {
 		p.progress = update
 	}
-
-	p.refresh()
 }
 
 func (p *progressBar) refresh() {
-	if !p.isShown() {
-		return
-	}
-
 	task := float64(p.Task())
 	progress := float64(p.Progress())
 	ratio := progress / task
@@ -82,6 +96,13 @@ func (p *progressBar) refresh() {
 	fmt.Print(strings.Repeat("\b", window.Cols()))
 
 	fmt.Printf("\r%.1f%% %s", ratio*100, progressStr)
+}
+
+func (p *progressBar) finalize() {
+	p.refresh()
+	fmt.Print("\n")
+
+	p.finalizeCh <- struct{}{}
 }
 
 func (p *progressBar) isShown() (shown bool) {
