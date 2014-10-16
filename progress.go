@@ -6,22 +6,22 @@ import (
 )
 
 type ProgressBar interface {
-	Progress() (progress uint)
-	Task() (task uint)
+	Progress() (progress int)
+	Task() (task int)
 	Show()
 	Close()
-	Add(progress uint)
+	Add(progress int)
 	isShown() (shown bool)
 }
 
 type progressBar struct {
-	progress   uint
-	task       uint
+	progress   int
+	task       int
 	lastUpdate uint
 	shown      bool
 }
 
-func New(task uint) ProgressBar {
+func New(task int) ProgressBar {
 	p := &progressBar{
 		progress: 0,
 		task:     task,
@@ -30,11 +30,11 @@ func New(task uint) ProgressBar {
 	return p
 }
 
-func (p *progressBar) Progress() (progress uint) {
+func (p *progressBar) Progress() (progress int) {
 	return p.progress
 }
 
-func (p *progressBar) Task() (task uint) {
+func (p *progressBar) Task() (task int) {
 	task = p.task
 	return
 }
@@ -56,7 +56,7 @@ func (p *progressBar) Close() {
 	fmt.Print("\n")
 }
 
-func (p *progressBar) Add(progress uint) {
+func (p *progressBar) Add(progress int) {
 	if update := p.progress + progress; update > p.task {
 		p.progress = p.task
 	} else {
