@@ -11,7 +11,8 @@ The following snippet is an example of simple progress bar.
 
 ```go
 // Create a new progress bar. 
-p := progress.New(TASK_SIZE) // TASK_SIZE = 500
+// "TASK_SIZE" is the total number of tasks to be processed.
+p := progress.New(TASK_SIZE)
 p.Show()
 
 for task := 0; task < p.Task(); task++ {
