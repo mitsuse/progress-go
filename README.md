@@ -29,7 +29,6 @@ p.Close()
 ## TODO
 
 - Implement custumizable progressbar.
-- Use channel to update the progress and the bar.
 - Write the docs.
 
 ## License
