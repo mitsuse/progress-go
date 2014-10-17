@@ -28,6 +28,14 @@ p.Close()
 Progress-go also works on multiple threads.
 Please try running [multi.go](example/multi/multi.go).
 
+## Installation
+
+Just execute the following command:
+
+```sh
+go get github.com/mitsuse/progress-go
+```
+
 ## TODO
 
 - Implement custumizable progressbar.
