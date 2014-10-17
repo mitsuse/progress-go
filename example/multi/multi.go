@@ -16,7 +16,7 @@ func main() {
 
 	quitCh := make(chan struct{}, WORKER_NUM)
 
-	for i := 0; i < WORKER_NUM; i++ {
+	for i := 0; i < cap(quitCh); i++ {
 		go func() {
 			taskSize := TASK_SIZE / WORKER_NUM
 
