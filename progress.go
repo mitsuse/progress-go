@@ -7,18 +7,14 @@ import (
 )
 
 type ProgressBar interface {
-	Progress() (progress int)
-	Task() (task int)
 	Show()
 	Close()
 	Add(progress int)
-	IsShown() (shown bool)
 }
 
 type progressBar struct {
 	progress   int
 	task       int
-	shown      bool
 	tickCh     chan time.Time
 	finalizeCh chan struct{}
 }
@@ -34,17 +30,7 @@ func New(task int) ProgressBar {
 	return p
 }
 
-func (p *progressBar) Progress() (progress int) {
-	return p.progress
-}
-
-func (p *progressBar) Task() (task int) {
-	task = p.task
-	return
-}
-
 func (p *progressBar) Show() {
-	p.shown = true
 	p.refresh()
 
 	ticker := time.NewTicker(time.Millisecond * 100)
@@ -65,11 +51,6 @@ func (p *progressBar) Show() {
 }
 
 func (p *progressBar) Close() {
-	if !p.IsShown() {
-		return
-	}
-	p.shown = false
-
 	close(p.tickCh)
 
 	<-p.finalizeCh
@@ -84,8 +65,8 @@ func (p *progressBar) Add(progress int) {
 }
 
 func (p *progressBar) refresh() {
-	task := float64(p.Task())
-	progress := float64(p.Progress())
+	task := float64(p.task)
+	progress := float64(p.progress)
 	ratio := progress / task
 
 	// TODO: Obtain the width of progress bar as a argument of New().
@@ -102,8 +83,4 @@ func (p *progressBar) finalize() {
 	fmt.Print("\n")
 
 	p.finalizeCh <- struct{}{}
-}
-
-func (p *progressBar) IsShown() (shown bool) {
-	return p.shown
 }
