@@ -18,7 +18,7 @@ func main() {
 
 	for i := 0; i < cap(quitCh); i++ {
 		go func() {
-			taskSize := TASK_SIZE / WORKER_NUM
+			taskSize := p.Task() / cap(quitCh)
 
 			for x := 0; x < taskSize; x++ {
 				doSomething()

@@ -10,6 +10,7 @@ type ProgressBar interface {
 	Show()
 	Close()
 	Add(progress int)
+	Task() int
 }
 
 type progressBar struct {
@@ -68,6 +69,10 @@ func (p *progressBar) Add(progress int) {
 	}
 
 	<-p.addSynCh
+}
+
+func (p *progressBar) Task() int {
+	return p.task
 }
 
 func (p *progressBar) refresh() {
