@@ -18,7 +18,6 @@ type ProgressBar interface {
 type progressBar struct {
 	progress   int
 	task       int
-	lastUpdate uint
 	shown      bool
 	tickCh     chan time.Time
 	finalizeCh chan struct{}
