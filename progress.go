@@ -14,21 +14,25 @@ type ProgressBar interface {
 }
 
 type progressBar struct {
-	progress   int
-	task       int
-	ticker     *time.Ticker
+	progress int
+	task     int
+	ticker   *time.Ticker
+
 	stopCh     chan struct{}
 	finalizeCh chan struct{}
-	addSynCh   chan struct{}
+
+	addSynCh chan struct{}
 }
 
 func New(task int) ProgressBar {
 	p := &progressBar{
-		progress:   0,
-		task:       task,
+		progress: 0,
+		task:     task,
+
 		stopCh:     make(chan struct{}),
 		finalizeCh: make(chan struct{}),
-		addSynCh:   make(chan struct{}, 1),
+
+		addSynCh: make(chan struct{}, 1),
 	}
 
 	return p
