@@ -6,13 +6,14 @@ import (
 	"github.com/mitsuse/progress-go"
 )
 
+const TASK_SIZE = 500
+
 func main() {
 	// Create a new progress bar.
-	// "500" is the size of task related to the progress bar.
-	p := progress.New(500)
+	p := progress.New(TASK_SIZE)
 	p.Show()
 
-	for task := 0; task < p.Task(); task++ {
+	for task := 0; task < TASK_SIZE; task++ {
 		// Do something.
 		time.Sleep(time.Millisecond * 10)
 
@@ -20,6 +21,6 @@ func main() {
 		p.Add(1)
 	}
 
-	// Force to update and quit the progress bar.
+	// Force to refresh the progress bar and quit.
 	p.Close()
 }
