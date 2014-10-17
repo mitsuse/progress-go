@@ -1,7 +1,7 @@
 package main
 
 import (
-	"time"
+	"math"
 
 	"github.com/mitsuse/progress-go"
 )
@@ -18,11 +18,10 @@ func main() {
 
 	for i := 0; i < cap(quitCh); i++ {
 		go func() {
-			taskSize := TASK_SIZE / WORKER_NUM
+			taskSize := p.Task() / cap(quitCh)
 
 			for x := 0; x < taskSize; x++ {
-				// Do something.
-				time.Sleep(time.Millisecond * 10)
+				doSomething()
 
 				// Make a progress
 				p.Add(1)
@@ -39,4 +38,11 @@ func main() {
 
 	// Force to update and quit the progress bar.
 	p.Close()
+}
+
+func doSomething() {
+	iteration := int(math.Pow(10, 8))
+
+	for i := 0; i < iteration; i++ {
+	}
 }
