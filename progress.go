@@ -3,74 +3,87 @@ package progress
 import (
 	"fmt"
 	"strings"
+	"time"
 )
 
 type ProgressBar interface {
-	Progress() (progress uint)
-	Task() (task uint)
+	Progress() (progress int)
+	Task() (task int)
 	Show()
 	Close()
-	Add(progress uint)
-	isShown() (shown bool)
+	Add(progress int)
+	IsShown() (shown bool)
 }
 
 type progressBar struct {
-	progress   uint
-	task       uint
-	lastUpdate uint
+	progress   int
+	task       int
 	shown      bool
+	tickCh     chan time.Time
+	finalizeCh chan struct{}
 }
 
-func New(task uint) ProgressBar {
+func New(task int) ProgressBar {
 	p := &progressBar{
-		progress: 0,
-		task:     task,
+		progress:   0,
+		task:       task,
+		tickCh:     make(chan time.Time),
+		finalizeCh: make(chan struct{}),
 	}
 
 	return p
 }
 
-func (p *progressBar) Progress() (progress uint) {
+func (p *progressBar) Progress() (progress int) {
 	return p.progress
 }
 
-func (p *progressBar) Task() (task uint) {
+func (p *progressBar) Task() (task int) {
 	task = p.task
 	return
 }
 
 func (p *progressBar) Show() {
 	p.shown = true
-
 	p.refresh()
+
+	ticker := time.NewTicker(time.Millisecond * 100)
+	go func() {
+		for t := range ticker.C {
+			p.tickCh <- t
+		}
+	}()
+
+	go func() {
+		for _ = range p.tickCh {
+			p.refresh()
+		}
+
+		ticker.Stop()
+		p.finalize()
+	}()
 }
 
 func (p *progressBar) Close() {
-	if !p.isShown() {
+	if !p.IsShown() {
 		return
 	}
-
-	p.refresh()
-
 	p.shown = false
-	fmt.Print("\n")
+
+	close(p.tickCh)
+
+	<-p.finalizeCh
 }
 
-func (p *progressBar) Add(progress uint) {
+func (p *progressBar) Add(progress int) {
 	if update := p.progress + progress; update > p.task {
 		p.progress = p.task
 	} else {
 		p.progress = update
 	}
-
-	p.refresh()
 }
 
 func (p *progressBar) refresh() {
-	if !p.isShown() {
-		return
-	}
-
 	task := float64(p.Task())
 	progress := float64(p.Progress())
 	ratio := progress / task
@@ -84,6 +97,13 @@ func (p *progressBar) refresh() {
 	fmt.Printf("\r%.1f%% %s", ratio*100, progressStr)
 }
 
-func (p *progressBar) isShown() (shown bool) {
+func (p *progressBar) finalize() {
+	p.refresh()
+	fmt.Print("\n")
+
+	p.finalizeCh <- struct{}{}
+}
+
+func (p *progressBar) IsShown() (shown bool) {
 	return p.shown
 }
