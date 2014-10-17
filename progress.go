@@ -12,7 +12,7 @@ type ProgressBar interface {
 	Show()
 	Close()
 	Add(progress int)
-	isShown() (shown bool)
+	IsShown() (shown bool)
 }
 
 type progressBar struct {
@@ -65,7 +65,7 @@ func (p *progressBar) Show() {
 }
 
 func (p *progressBar) Close() {
-	if !p.isShown() {
+	if !p.IsShown() {
 		return
 	}
 	p.shown = false
@@ -104,6 +104,6 @@ func (p *progressBar) finalize() {
 	p.finalizeCh <- struct{}{}
 }
 
-func (p *progressBar) isShown() (shown bool) {
+func (p *progressBar) IsShown() (shown bool) {
 	return p.shown
 }
