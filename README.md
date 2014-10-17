@@ -26,6 +26,9 @@ for task := 0; task < TASK_SIZE; task++ {
 p.Close()
 ```
 
+Progress-go also works on multiple threads.
+Please try running [multi.go](example/multi/multi.go).
+
 ## TODO
 
 - Implement custumizable progressbar.

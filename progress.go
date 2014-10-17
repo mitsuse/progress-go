@@ -17,6 +17,7 @@ type progressBar struct {
 	task       int
 	tickCh     chan time.Time
 	finalizeCh chan struct{}
+	addSynCh   chan struct{}
 }
 
 func New(task int) ProgressBar {
@@ -25,6 +26,7 @@ func New(task int) ProgressBar {
 		task:       task,
 		tickCh:     make(chan time.Time),
 		finalizeCh: make(chan struct{}),
+		addSynCh:   make(chan struct{}, 1),
 	}
 
 	return p
@@ -57,11 +59,15 @@ func (p *progressBar) Close() {
 }
 
 func (p *progressBar) Add(progress int) {
+	p.addSynCh <- struct{}{}
+
 	if update := p.progress + progress; update > p.task {
 		p.progress = p.task
 	} else {
 		p.progress = update
 	}
+
+	<-p.addSynCh
 }
 
 func (p *progressBar) refresh() {
