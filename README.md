@@ -15,8 +15,7 @@ p := progress.New(TASK_SIZE) // TASK_SIZE = 500
 p.Show()
 
 for task := 0; task < TASK_SIZE; task++ {
-	// Do something.
-	time.Sleep(time.Millisecond * 10)
+    doSomething()
 
 	// Make a progress
 	p.Add(1)
