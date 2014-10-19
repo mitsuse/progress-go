@@ -40,7 +40,6 @@ go get github.com/mitsuse/progress-go
 
 ## TODO
 
-- Implement custumizable progressbar.
 - Write the docs.
 
 ## License
