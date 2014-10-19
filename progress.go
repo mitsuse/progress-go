@@ -22,9 +22,17 @@ type progressBar struct {
 	finalizeCh chan struct{}
 
 	addSynCh chan struct{}
+
+	widgetSeq []Widget
 }
 
 func New(task int) ProgressBar {
+	// TODO: Obtain the width of progress bar as a argument of New().
+	widgetSeq := []Widget{
+		NewPercentage("%.1f%%"),
+		NewBar(60, "#", ""),
+	}
+
 	p := &progressBar{
 		progress: 0,
 		task:     task,
@@ -33,6 +41,8 @@ func New(task int) ProgressBar {
 		finalizeCh: make(chan struct{}),
 
 		addSynCh: make(chan struct{}, 1),
+
+		widgetSeq: widgetSeq,
 	}
 
 	return p
@@ -80,21 +90,22 @@ func (p *progressBar) Task() int {
 }
 
 func (p *progressBar) refresh() {
-	task := float64(p.task)
-	progress := float64(p.progress)
-	ratio := progress / task
-
-	// TODO: Obtain the width of progress bar as a argument of New().
-	progressStr := strings.Repeat("#", int(60*ratio))
-
 	size, err := GetSize()
 	if err != nil {
 		return
 	}
 
 	fmt.Print(strings.Repeat("\b", size.Cols()))
+	fmt.Print("\r")
 
-	fmt.Printf("\r%.1f%% %s", ratio*100, progressStr)
+	if len(p.widgetSeq) > 0 {
+		fmt.Print(p.widgetSeq[0].Print(p.progress, p.task))
+	}
+
+	for i := 1; i < len(p.widgetSeq); i++ {
+		widget := p.widgetSeq[i]
+		fmt.Printf(" %s", widget.Print(p.progress, p.task))
+	}
 }
 
 func (p *progressBar) finalize() {
