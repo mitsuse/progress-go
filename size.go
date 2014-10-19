@@ -46,5 +46,5 @@ type SizeError uintptr
 func (e SizeError) Error() string {
 	template := "Fail to get the size of terminal: %v"
 
-	return fmt.Sprint(template, e)
+	return fmt.Sprintf(template, e)
 }
