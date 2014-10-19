@@ -87,7 +87,11 @@ func (p *progressBar) refresh() {
 	// TODO: Obtain the width of progress bar as a argument of New().
 	progressStr := strings.Repeat("#", int(60*ratio))
 
-	window := GetWindow()
+	window, err := GetWindow()
+	if err != nil {
+		return
+	}
+
 	fmt.Print(strings.Repeat("\b", window.Cols()))
 
 	fmt.Printf("\r%.1f%% %s", ratio*100, progressStr)

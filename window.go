@@ -1,6 +1,7 @@
 package progress
 
 import (
+	"fmt"
 	"syscall"
 	"unsafe"
 )
@@ -18,7 +19,7 @@ func (w *Window) Cols() int {
 	return int(w.cols)
 }
 
-func GetWindow() *Window {
+func GetWindow() (w *Window, err error) {
 	valueSeq := [4]uint16{}
 
 	result, _, errNumber := syscall.Syscall(
@@ -29,13 +30,21 @@ func GetWindow() *Window {
 	)
 
 	if int(result) == -1 {
-		panic(errNumber)
+		err = WindowError(errNumber)
+	} else {
+		w = &Window{
+			rows: valueSeq[0],
+			cols: valueSeq[1],
+		}
 	}
 
-	w := &Window{
-		rows: valueSeq[0],
-		cols: valueSeq[1],
-	}
+	return
+}
 
-	return w
+type WindowError uintptr
+
+func (e WindowError) Error() string {
+	template := "Fail to get the size of terminal: %v"
+
+	return fmt.Sprint(template, e)
 }
