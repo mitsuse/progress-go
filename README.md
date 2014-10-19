@@ -9,7 +9,7 @@ A library to show customizable progress bar on CLI implemented in Golang.
 
 Porgress-go supports the following features:
 
-- Custamizable widgets
+- Customizable widgets
 - Status update with multi-threads
 
 ## Example
