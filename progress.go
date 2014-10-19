@@ -26,13 +26,7 @@ type progressBar struct {
 	widgetSeq []Widget
 }
 
-func New(task int) ProgressBar {
-	// TODO: Obtain the width of progress bar as a argument of New().
-	widgetSeq := []Widget{
-		NewPercentage("%.1f%%"),
-		NewBar(60, "#", ""),
-	}
-
+func New(task int, widgetSeq []Widget) ProgressBar {
 	p := &progressBar{
 		progress: 0,
 		task:     task,
@@ -46,6 +40,15 @@ func New(task int) ProgressBar {
 	}
 
 	return p
+}
+
+func NewSimple(task, width int) ProgressBar {
+	widgetSeq := []Widget{
+		NewPercentage("%.1f%%"),
+		NewBar(width, "#", ""),
+	}
+
+	return New(task, widgetSeq)
 }
 
 func (p *progressBar) Show() {
