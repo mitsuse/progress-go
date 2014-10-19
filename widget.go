@@ -7,7 +7,7 @@ import (
 )
 
 type Widget interface {
-	Print(progress, task int) (repr string)
+	Print(progress, task int, startTime int64) (repr string)
 }
 
 type Perpcentage struct {
@@ -22,7 +22,7 @@ func NewPercentage(format string) *Perpcentage {
 	return p
 }
 
-func (p *Perpcentage) Print(progress, task int) (repr string) {
+func (p *Perpcentage) Print(progress, task int, startTime int64) (repr string) {
 	return fmt.Sprintf(p.format, float64(progress)/float64(task)*100)
 }
 
@@ -42,7 +42,7 @@ func NewBar(size int, progress, rest string) *Bar {
 	return b
 }
 
-func (b *Bar) Print(progress, task int) (repr string) {
+func (b *Bar) Print(progress, task int, startTime int64) (repr string) {
 	template := "%s%s"
 
 	progressSize := int(math.Floor(float64(progress) / float64(task) * float64(b.size)))

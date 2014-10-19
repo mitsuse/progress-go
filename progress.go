@@ -14,9 +14,10 @@ type ProgressBar interface {
 }
 
 type progressBar struct {
-	progress int
-	task     int
-	ticker   *time.Ticker
+	progress  int
+	task      int
+	startTime int64
+	ticker    *time.Ticker
 
 	stopCh     chan struct{}
 	finalizeCh chan struct{}
@@ -52,6 +53,8 @@ func NewSimple(task, width int) ProgressBar {
 }
 
 func (p *progressBar) Show() {
+	p.startTime = time.Now().Unix()
+
 	p.refresh()
 
 	ticker := time.NewTicker(time.Millisecond * 100)
@@ -102,12 +105,12 @@ func (p *progressBar) refresh() {
 	fmt.Print("\r")
 
 	if len(p.widgetSeq) > 0 {
-		fmt.Print(p.widgetSeq[0].Print(p.progress, p.task))
+		fmt.Print(p.widgetSeq[0].Print(p.progress, p.task, p.startTime))
 	}
 
 	for i := 1; i < len(p.widgetSeq); i++ {
 		widget := p.widgetSeq[i]
-		fmt.Printf(" %s", widget.Print(p.progress, p.task))
+		fmt.Printf(" %s", widget.Print(p.progress, p.task, p.startTime))
 	}
 }
 
