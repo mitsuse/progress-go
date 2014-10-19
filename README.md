@@ -16,7 +16,7 @@ p := progress.New(TASK_SIZE)
 p.Show()
 
 for task := 0; task < p.Task(); task++ {
-    doSomething()
+	doSomething()
 
 	// Make a progress
 	p.Add(1)
@@ -40,6 +40,7 @@ go get github.com/mitsuse/progress-go
 ## TODO
 
 - Implement custumizable progressbar.
+- Support for various platforms.
 - Write the docs.
 
 ## License
