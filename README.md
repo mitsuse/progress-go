@@ -3,13 +3,13 @@
 [![Build Status](https://travis-ci.org/mitsuse/progress-go.svg?branch=master)](https://travis-ci.org/mitsuse/progress-go)
 [![GoDoc](http://godoc.org/github.com/mitsuse/progress-go?status.svg)](http://godoc.org/github.com/mitsuse/progress-go)
 
-A library to show progressbars in CLI implemented in Golang. 
+A library to show customizable progress bar on CLI implemented in Golang.
 
 ## Features
 
 Porgress-go supports the following features:
 
-- Custamizable widgets
+- Customizable widgets
 - Status update with multi-threads
 
 ## Example
