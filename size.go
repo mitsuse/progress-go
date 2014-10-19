@@ -6,20 +6,20 @@ import (
 	"unsafe"
 )
 
-type Window struct {
+type Size struct {
 	rows uint16
 	cols uint16
 }
 
-func (w *Window) Rows() int {
-	return int(w.rows)
+func (s *Size) Rows() int {
+	return int(s.rows)
 }
 
-func (w *Window) Cols() int {
-	return int(w.cols)
+func (s *Size) Cols() int {
+	return int(s.cols)
 }
 
-func GetWindow() (w *Window, err error) {
+func GetSize() (s *Size, err error) {
 	valueSeq := [4]uint16{}
 
 	result, _, errNumber := syscall.Syscall(
@@ -30,9 +30,9 @@ func GetWindow() (w *Window, err error) {
 	)
 
 	if int(result) == -1 {
-		err = WindowError(errNumber)
+		err = SizeError(errNumber)
 	} else {
-		w = &Window{
+		s = &Size{
 			rows: valueSeq[0],
 			cols: valueSeq[1],
 		}
@@ -41,9 +41,9 @@ func GetWindow() (w *Window, err error) {
 	return
 }
 
-type WindowError uintptr
+type SizeError uintptr
 
-func (e WindowError) Error() string {
+func (e SizeError) Error() string {
 	template := "Fail to get the size of terminal: %v"
 
 	return fmt.Sprint(template, e)
