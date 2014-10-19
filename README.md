@@ -12,7 +12,8 @@ The following snippet is an example of simple progress bar.
 ```go
 // Create a new progress bar. 
 // "TASK_SIZE" is the total number of tasks to be processed.
-p := progress.New(TASK_SIZE)
+// "BAR_WIDTH" is the width of progress bar.
+p := progress.NewSimple(TASK_SIZE, BAR_WIDTH)
 p.Show()
 
 for task := 0; task < p.Task(); task++ {
@@ -39,9 +40,8 @@ go get github.com/mitsuse/progress-go
 
 ## TODO
 
-- Implement custumizable progressbar.
-- Support for various platforms.
 - Write the docs.
+- Support for various platforms.
 
 ## License
 

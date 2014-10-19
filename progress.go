@@ -14,17 +14,20 @@ type ProgressBar interface {
 }
 
 type progressBar struct {
-	progress int
-	task     int
-	ticker   *time.Ticker
+	progress  int
+	task      int
+	startTime int64
+	ticker    *time.Ticker
 
 	stopCh     chan struct{}
 	finalizeCh chan struct{}
 
 	addSynCh chan struct{}
+
+	widgetSeq []Widget
 }
 
-func New(task int) ProgressBar {
+func New(task int, widgetSeq []Widget) ProgressBar {
 	p := &progressBar{
 		progress: 0,
 		task:     task,
@@ -33,12 +36,25 @@ func New(task int) ProgressBar {
 		finalizeCh: make(chan struct{}),
 
 		addSynCh: make(chan struct{}, 1),
+
+		widgetSeq: widgetSeq,
 	}
 
 	return p
 }
 
+func NewSimple(task, width int) ProgressBar {
+	widgetSeq := []Widget{
+		NewPercentage("%.1f%%"),
+		NewBar(width, "#", ""),
+	}
+
+	return New(task, widgetSeq)
+}
+
 func (p *progressBar) Show() {
+	p.startTime = time.Now().Unix()
+
 	p.refresh()
 
 	ticker := time.NewTicker(time.Millisecond * 100)
@@ -80,17 +96,22 @@ func (p *progressBar) Task() int {
 }
 
 func (p *progressBar) refresh() {
-	task := float64(p.task)
-	progress := float64(p.progress)
-	ratio := progress / task
+	size, err := GetSize()
+	if err != nil {
+		return
+	}
 
-	// TODO: Obtain the width of progress bar as a argument of New().
-	progressStr := strings.Repeat("#", int(60*ratio))
+	fmt.Print(strings.Repeat("\b", size.Cols()))
+	fmt.Print("\r")
 
-	window := GetWindow()
-	fmt.Print(strings.Repeat("\b", window.Cols()))
+	if len(p.widgetSeq) > 0 {
+		fmt.Print(p.widgetSeq[0].Print(p.progress, p.task, p.startTime))
+	}
 
-	fmt.Printf("\r%.1f%% %s", ratio*100, progressStr)
+	for i := 1; i < len(p.widgetSeq); i++ {
+		widget := p.widgetSeq[i]
+		fmt.Printf(" %s", widget.Print(p.progress, p.task, p.startTime))
+	}
 }
 
 func (p *progressBar) finalize() {

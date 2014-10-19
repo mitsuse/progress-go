@@ -7,11 +7,12 @@ import (
 )
 
 const TASK_SIZE = 500
+const BAR_WIDTH = 60
 const WORKER_NUM = 2
 
 func main() {
 	// Create a new progress bar.
-	p := progress.New(TASK_SIZE)
+	p := progress.NewSimple(TASK_SIZE, BAR_WIDTH)
 	p.Show()
 
 	quitCh := make(chan struct{}, WORKER_NUM)
