@@ -5,6 +5,13 @@
 
 A library to show progressbars in CLI implemented in Golang. 
 
+## Features
+
+Porgress-go supports the following features:
+
+- Custamizable widgets
+- Status update with multi-threads
+
 ## Example
 
 The following snippet is an example of simple progress bar.
