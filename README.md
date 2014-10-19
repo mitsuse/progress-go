@@ -5,6 +5,8 @@
 
 A library to show customizable progress bar on CLI implemented in Golang.
 
+![example.gif](example.gif)
+
 ## Features
 
 Porgress-go supports the following features:
